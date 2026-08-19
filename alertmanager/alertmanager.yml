@@ -2,7 +2,19 @@ global:
   resolve_timeout: 5m
 
 route:
-  receiver: "default"
+  receiver: slack-notifications
 
 receivers:
-  - name: "default"
+  - name: slack-notifications
+    slack_configs:
+      - api_url: ""
+        send_resolved: true
+        title: "Ops Sentinel Alert"
+        text: |
+          *Alert:* {{ .CommonLabels.alertname }}
+          *Severity:* {{ .CommonLabels.severity }}
+
+          {{ range .Alerts }}
+          *Summary:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          {{ end }}
