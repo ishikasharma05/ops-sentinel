@@ -1,0 +1,12 @@
+groups:
+  - name: ops-sentinel-alerts
+
+    rules:
+      - alert: HighSimulatedCPU
+        expr: app_simulated_cpu_percent > 80
+        for: 10s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "Simulated CPU usage has been above 80% for more than 10 seconds."
