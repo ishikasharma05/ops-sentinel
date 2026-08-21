@@ -1,4 +1,4 @@
-global:
+﻿global:
   resolve_timeout: 5m
 
 route:
@@ -7,7 +7,7 @@ route:
 receivers:
   - name: slack-notifications
     slack_configs:
-      - api_url: ""
+      - api_url: "${SLACK_WEBHOOK_URL}"
         send_resolved: true
         title: "Ops Sentinel Alert"
         text: |
@@ -18,3 +18,5 @@ receivers:
           *Summary:* {{ .Annotations.summary }}
           *Description:* {{ .Annotations.description }}
           {{ end }}
+
+

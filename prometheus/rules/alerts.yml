@@ -1,5 +1,6 @@
 groups:
   - name: ops-sentinel-alerts
+    interval: 5s
 
     rules:
       - alert: HighSimulatedCPU
