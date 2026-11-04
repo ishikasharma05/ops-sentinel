@@ -1,5 +1,16 @@
 services:
 
+  app:
+    build: .
+    container_name: ops-sentinel-app
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
   prometheus:
     image: prom/prometheus
     container_name: ops-sentinel-prometheus
@@ -8,8 +19,9 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/rules:/etc/prometheus/rules
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - prometheus_data:/prometheus
+    depends_on:
+      - app
 
   alertmanager:
     image: prom/alertmanager
@@ -18,14 +30,23 @@ services:
       - "9093:9093"
     volumes:
       - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
 
   grafana:
     image: grafana/grafana
     container_name: ops-sentinel-grafana
     ports:
       - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana_data:/var/lib/grafana
     depends_on:
       - prometheus
+
+volumes:
+  prometheus_data:
+  alertmanager_data:
+  grafana_data:
